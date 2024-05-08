@@ -1,0 +1,60 @@
+#recipe_manager.tstl
+
+<imports>
+import json
+
+<objects>
+recipeBook: RecipeBook <- RecipeBook()
+recipe: Recipe
+
+<pools>
+STRING: string[10] # Pool of strings to use as names, ingredients, and instructions
+RECIPE_NAME: string[10] # Separate pool for recipe names
+
+<primitives>
+STRING: "<string>"
+RECIPE_NAME: "<string>"
+
+<init>
+recipeBook = RecipeBook()
+
+<actions>
+# Add a new recipe to the recipe book
+recipeBook.add_recipe(Recipe(RECIPE_NAME, [STRING], STRING)) -> recipe
+
+# Remove a recipe from the recipe book
+recipeBook.remove_recipe(RECIPE_NAME)
+
+# Update a recipe in the recipe book
+recipeBook.update_recipe(RECIPE_NAME, Recipe(RECIPE_NAME, [STRING], STRING))
+
+# Search for a recipe by name
+recipeBook.search_recipe(RECIPE_NAME) -> recipe
+
+# List all recipes
+recipeBook.list_recipes()
+
+# Save recipes to a file
+recipeBook.save_recipes()
+
+# Load recipes from a file
+recipeBook.load_recipes()
+
+<properties>
+# Check if a recipe exists after adding it
+recipeBook.recipes.contains(RECIPE_NAME)
+
+# Check if a recipe does not exist after removing it
+!recipeBook.recipes.contains(RECIPE_NAME)
+
+# Verify that the correct recipe is returned by the search
+recipeBook.search_recipe(RECIPE_NAME) == recipe
+
+# Ensure the recipes list is not empty when recipes exist
+len(recipeBook.list_recipes()) > 0
+
+# Ensuring no exception is thrown when trying to load recipes
+try:
+    recipeBook.load_recipes()
+except FileNotFoundError:
+    false
